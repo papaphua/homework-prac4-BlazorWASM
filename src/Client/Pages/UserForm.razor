@@ -1,0 +1,88 @@
+﻿@page "/userform"
+@page "/userform/{id:int}"
+@inject IUserModelService UserModelService
+
+<EditForm Model="user" OOnSubmit="HandleSumbit">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="card rounded-3">
+
+                <div class="card-header" style="text-align:center">
+                    <h3>User Form</h3>
+                </div>
+
+                <div class="card-body">
+                    
+                    <div class="mb-3">
+                        <label for="firstname">First Name</label>
+                        <InputText id="firstname" class="form-control" @bind-Value="user.FirstName"></InputText>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lastname">Last Name</label>
+                        <InputText id="lastname" class="form-control" @bind-Value="user.LastName"></InputText>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="age">Age</label>
+                        <InputNumber id="age" class="form-control" @bind-Value="user.Age"></InputNumber>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="gender">Gender</label>
+                        <InputSelect id="gender" @bind-Value="user.Gender" class="form-control">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </InputSelect>
+                    </div>
+
+                </div>
+
+                <div class="card-footer" style="text-align:center">
+                    <button type="submit" class="btn btn-primary" @onclick="HandleSubmit">@btnText</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteUser"><i class="oi oi-trash"></i></button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    string btnText = string.Empty;
+
+    UserModel user = new UserModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = Id == null ? "Save New User" : "Update User";
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Id != null)
+        {
+            user = await UserModelService.GetUser((int)Id); 
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if(Id == null)
+        {
+            await UserModelService.CreateUser(user);
+        }
+        else
+        {
+            await UserModelService.UpdateUser(user);
+        }
+    }
+
+    async Task DeleteUser()
+    {
+        await UserModelService.DeleteUser(user.Id);
+    }
+}
