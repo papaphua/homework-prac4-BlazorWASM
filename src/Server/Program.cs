@@ -1,3 +1,6 @@
+global using homework_prac4.Shared.Models;
+global using Microsoft.EntityFrameworkCore;
+global using homework_prac4.Server.Data;
 using Microsoft.AspNetCore.ResponseCompression;
 
 namespace homework_prac4
@@ -12,6 +15,8 @@ namespace homework_prac4
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+            builder.Services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); 
 
             var app = builder.Build();
 
